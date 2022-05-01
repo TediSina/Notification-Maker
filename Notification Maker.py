@@ -21,6 +21,7 @@ while True:
             #icon_path = "icon.ico",
             threaded = True,
         )
+        
     except Exception as e:
         print(f"Error: {e}")
         print("Please try again.")
