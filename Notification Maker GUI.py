@@ -1,15 +1,14 @@
 from win10toast import ToastNotifier
 from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog
-import time
 import threading
 
-submittedName = ""
-submittedBody = ""
+submittedName = "Hello World!"
+submittedBody = "This is a notification."
+submittedDuration = 5
 
 def submitName():
     try:
+        global submittedName
         submittedName = nameEntryVar.get()
         print(f"Submitted name: {submittedName}")
 
@@ -22,6 +21,7 @@ def submitName():
 
 def submitBody():
     try:
+        global submittedBody
         submittedBody = bodyEntryVar.get()
         print(f"Submitted body (content): {submittedBody}")
 
@@ -32,14 +32,32 @@ def submitBody():
     else:
         bodyOutput.config(text="Notification body (content) was submitted successfully.", fg="green")
 
+def submitDuration():
+    try:
+        global submittedDuration
+        submittedDuration = float(durationEntryVar.get())
+        print(f"Submitted duration: {submittedDuration}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        durationOutput.config(text="An error occurred while submitting the notification duration. Please make sure that a number is provided and try again.", fg="red")
+    
+    else:
+        durationOutput.config(text="Notification body (content) was submitted successfully.", fg="green")
+
 def createNotification():
     try:
         toast.show_toast(
-            nameEntryVar.get(),
-            bodyEntryVar.get(),
-            duration = 5,
+            submittedName,
+            submittedBody,
+            duration = submittedDuration,
             threaded = True,
         )
+
+        print("---------------------------------------")
+        print(f"Submitted name: {submittedName}")
+        print(f"Submitted body (content): {submittedBody}")
+        print(f"Submitted duration: {submittedDuration}")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -52,7 +70,7 @@ toast = ToastNotifier()
 
 root = Tk()
 root.title("Notification Maker")
-root.geometry("500x500")
+root.geometry("800x700")
 root.columnconfigure(0, weight=1)
 
 notificationMakerLabel = Label(root, text="Notification Maker", font=("Arial", 30))
@@ -84,10 +102,23 @@ bodySubmitButton.grid(row=7, pady=5)
 bodyOutput = Label(root, text="", fg="red", font=("Arial", 10))
 bodyOutput.grid(row=8, pady=5)
 
+enterDurationLabel = Label(root, text="Enter the notification duration (after how many seconds it will self-destruct):", font=("Arial", 15))
+enterDurationLabel.grid(row=9, pady=5)
+
+durationEntryVar = StringVar()
+durationEntry = Entry(root, width=75, textvariable=durationEntryVar)
+durationEntry.grid(row=10, pady=5)
+
+durationSubmitButton = Button(root, text="Submit", width=10, bg="red", fg="white", command = lambda : threading.Thread(target=submitDuration).start())
+durationSubmitButton.grid(row=11, pady=5)
+
+durationOutput = Label(root, text="", fg="red", font=("Arial", 10))
+durationOutput.grid(row=12, pady=5)
+
 notificationCreationButton = Button(root, text="Create the notification", width=18, bg="red", fg="white", command = lambda : threading.Thread(target=createNotification).start())
-notificationCreationButton.grid(row=9, pady=5)
+notificationCreationButton.grid(row=13, pady=5)
 
 notificationCreationOutput = Label(root, text="", fg="red", font=("Arial", 10))
-notificationCreationOutput.grid(row=10, pady=5)
+notificationCreationOutput.grid(row=14, pady=5)
 
 root.mainloop()
