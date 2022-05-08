@@ -1,10 +1,12 @@
 from win10toast import ToastNotifier
 from tkinter import *
 import threading
+import time
 
 submittedName = "Hello World!"
 submittedBody = "This is a notification."
 submittedDuration = 5
+submittedTimer = 0
 
 def submitName():
     try:
@@ -43,10 +45,25 @@ def submitDuration():
         durationOutput.config(text="An error occurred while submitting the notification duration. Please make sure that a number is provided and try again.", fg="red")
     
     else:
-        durationOutput.config(text="Notification body (content) was submitted successfully.", fg="green")
+        durationOutput.config(text="Notification duration was submitted successfully.", fg="green")
+
+def submitTimer():
+    try:
+        global submittedTimer
+        submittedTimer = float(timerEntryVar.get())
+        print(f"Submitted timer: {submittedTimer}")
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        timerOutput.config(text="An error occurred while submitting the notification timer. Please make sure that a number is provided and try again.", fg="red")
+
+    else:
+        timerOutput.config(text="Notification timer was submitted successfully.", fg="green")
 
 def createNotification():
     try:
+        time.sleep(submittedTimer)
+
         toast.show_toast(
             submittedName,
             submittedBody,
@@ -58,6 +75,7 @@ def createNotification():
         print(f"Submitted name: {submittedName}")
         print(f"Submitted body (content): {submittedBody}")
         print(f"Submitted duration: {submittedDuration}")
+        print(f"Submitted timer: {submittedTimer}")
 
     except Exception as e:
         print(f"Error: {e}")
@@ -115,10 +133,23 @@ durationSubmitButton.grid(row=11, pady=5)
 durationOutput = Label(root, text="", fg="red", font=("Arial", 10))
 durationOutput.grid(row=12, pady=5)
 
+enterTimerLabel = Label(root, text="Enter the notification timer (after how many seconds it will execute):", font=("Arial", 15))
+enterTimerLabel.grid(row=13, pady=5)
+
+timerEntryVar = StringVar()
+timerEntry = Entry(root, width=75, textvariable=timerEntryVar)
+timerEntry.grid(row=14, pady=5)
+
+timerSubmitButton = Button(root, text="Submit", width=10, bg="red", fg="white", command = lambda : threading.Thread(target=submitTimer).start())
+timerSubmitButton.grid(row=15, pady=5)
+
+timerOutput = Label(root, text="", fg="red", font=("Arial", 10))
+timerOutput.grid(row=16, pady=5)
+
 notificationCreationButton = Button(root, text="Create the notification", width=18, bg="red", fg="white", command = lambda : threading.Thread(target=createNotification).start())
-notificationCreationButton.grid(row=13, pady=5)
+notificationCreationButton.grid(row=17, pady=5)
 
 notificationCreationOutput = Label(root, text="", fg="red", font=("Arial", 10))
-notificationCreationOutput.grid(row=14, pady=5)
+notificationCreationOutput.grid(row=18, pady=5)
 
 root.mainloop()
